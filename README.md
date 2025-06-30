@@ -294,6 +294,68 @@ void *monitor_routine(void *arg)
     return (NULL);
 }
 ```
+## Detailed Chart to Know All In & Out of the solution
+
+```mermaid 
+
+graph TD
+    A[Start Program] --> B{Validate Args ac, av};
+    B -- Valid --> C[Init Global Vars t_vars];
+    B -- Invalid --> Z[Print Error & Exit];
+    C -- Success --> D[Init Mutexes & Philosopher Data];
+    C -- Fail --> Z;
+    D -- Success --> E[Launch Philosopher Threads routine];
+    D -- Fail --> Y[Free All & Exit];
+    E --> F[Detach Threads];
+    F --> G[Start Manager Monitor Loop];
+
+    subgraph "Philosopher Thread (routine - for each philo)"
+        direction LR
+        R1[Start Routine] --> R2{Stagger Start? even ID};
+        R2 -- Yes --> R3[usleep 200];
+        R2 -- No --> R4;
+        R3 --> R4;
+        R4[Begin Loop] --> R5[Lock Left Fork];
+        R5 --> R6[Print took fork];
+        R6 --> R7[Lock Right Fork];
+        R7 --> R8[Print took fork];
+        R8 --> R9[Print is eating];
+        R9 --> R10[Update last_ate_time & eating_count mutexed];
+        R10 --> R11[ft_usleep time_to_eat];
+        R11 --> R12[Unlock Right Fork];
+        R12 --> R13[Unlock Left Fork];
+        R13 --> R14{Meal Target Met? eatingcount_check};
+        R14 -- Yes --> R18[End Thread];
+        R14 -- No --> R15[Print is sleeping];
+        R15 --> R16[ft_usleep. time_to_sleep];
+        R16 --> R17[Print is thinking];
+        R17 --> R4;
+    end
+
+    subgraph "Manager Thread (Monitor Loop - in main)"
+        direction TB
+        M1[Start Manager Loop] --> M2[Iterate Philosophers];
+        M2 --> M3[Lock lasttimeatemutex];
+        M3 --> M4{All Philosophers Met Meal Target? everyoneate <= 0};
+        M4 -- Yes --> M8[Unlock lasttimeatemutex];
+        M8 --> M9[Return from Manager  End Sim];
+        M4 -- No --> M5{Philosopher Died?  time_to_die exceeded};
+        M5 -- Yes --> M6[Print died];
+        M6 --> M7[Unlock print_mutex & lasttimeatemutex];
+        M7 --> M9;
+        M5 -- No --> M10[Unlock lasttimeatemutex];
+        M10 --> M2;
+    end
+
+    G --> M1
+    M9 --> Y
+
+    style Z fill:#f99,stroke:#333,stroke-width:2px
+    style Y fill:#f99,stroke:#333,stroke-width:2px
+    style R18 fill:#cfc,stroke:#333,stroke-width:2px
+    style M9 fill:#cfc,stroke:#333,stroke-width:2px
+
+```
 
 ---
 
@@ -777,6 +839,3 @@ Got questions? Want to discuss the meaning of life, the universe, and concurrent
 </div>
 
 ---
-
-*README crafted with ❤️ and way too much caffeine*
->>>>>>> 628fb56 (edit readme)
