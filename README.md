@@ -10,6 +10,10 @@
 
 > *"In which we learn that even philosophers can't escape the eternal struggle of waiting for Spaghetti"*
 
+![comic](img/philo_prblm.png) 
+
+
+
 ## 🎭 Meet Your Friendly Neighborhood Philosopher
 
 Hey there! Welcome to my take on the classic **Dining Philosophers Problem** - one of computer science's most famous puzzles that'll make you question everything you know about sharing resources (and probably make you hungry for spaghetti).
